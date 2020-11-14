@@ -186,7 +186,8 @@
 			if #cfg.propertysheets > 0 then
 				local dirs = cfg.propertysheets
 				for _, dir in ipairs(dirs) do
-					_p(2,'<Import Project="%s" />', path.translate(dir))
+					local translated = path.translate(dir)
+					_p(2,'<Import Project="%s" Condition="exists(\'%s\')" />', translated, translated)
 				end
 			end
 
@@ -228,6 +229,12 @@
 			if cfg.kind == "SharedLib" then
 				local ignore = (cfg.flags.NoImportLib ~= nil)
 				_p(2,'<IgnoreImportLibrary>%s</IgnoreImportLibrary>', tostring(ignore))
+			end
+
+			if cfg.platform == "NX32" or cfg.platform == "NX64" then
+				if cfg.flags.Cpp17 then
+					_p(2,'<CppLanguageStandard>Gnu++17</CppLanguageStandard>')
+				end
 			end
 
 			if cfg.platform == "Durango" then

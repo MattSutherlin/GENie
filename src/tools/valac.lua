@@ -34,20 +34,48 @@
 		FatalWarnings             = "--fatal-warnings",               -- Treat warnings as fatal
 		HideInternal              = "--hide-internal",                -- Hide symbols marked as internal
 		NoStdPkg                  = "--nostdpkg",                     -- Do not include standard packages
-		Optimize                  = "-X -O2",
-		OptimizeSize              = "-X -Os",
-		OptimizeSpeed             = "-X -O3",
 		Symbols                   = "-g",                             -- Produce debug information
 	}
 
-	premake.valac.platforms = {}
+	local valaccflags =
+	{
+		Optimize                  = "-O2",
+		OptimizeSize              = "-Os",
+		OptimizeSpeed             = "-O3",
+		Symbols                   = "-g",                             -- Produce debug information
+	}
 
 --
--- Returns a list of compiler flags, based on the supplied configuration.
+-- Map platforms to flags
+--
+
+	premake.valac.platforms =
+	{
+		Native = {
+		},
+		x64 = {
+			flags = "-m64"
+		},
+	}
+
+
+
+--
+-- Returns a list of compiler flags for `valac`, based on the supplied configuration.
 --
 
 	function premake.valac.getvalaflags(cfg)
 		return table.translate(cfg.flags, valaflags)
+	end
+
+
+
+--
+-- Returns a list of compiler flags for `cc`, based on the supplied configuration.
+--
+
+	function premake.valac.getvalaccflags(cfg)
+		return table.translate(cfg.flags, valaccflags)
 	end
 
 
@@ -79,18 +107,6 @@
 	end
 
 
-
---
--- Decorate C flags for the Vala command line.
---
-
-	function premake.valac.getbuildoptions(buildoptions)
-		local result = { }
-		for _, def in ipairs(buildoptions) do
-			table.insert(result, '-X ' .. def)
-		end
-		return result
-	end
 
 --
 -- Decorate vapidirs for the Vala command line.
